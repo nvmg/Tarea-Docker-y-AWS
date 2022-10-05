@@ -3,6 +3,7 @@ package edu.escuelaing.arem;
 import static spark.Spark.*;
 import com.google.gson.Gson;
 import edu.escuelaing.arem.MongoDB.ConectionMongo;
+import edu.escuelaing.arem.Message.MessageStructure;
 
 /**
  *
@@ -13,13 +14,16 @@ public class DockerAWS {
     public static void main(String[] args) {
         port(getPort());
         ConectionMongo conect = new ConectionMongo();
-        get("/message", (req,res) -> {
+        get("/messages", (req,res) -> {
             res.status(200);
             res.type("application/json");
-            return new Gson().toJson(conect.getMessages())
+            return new Gson().toJson(conect.getMessages());
         });
-        
-       
+        post("/messages", (req,res) -> {
+            MessageStructure message = new MessageStructure(req.body());
+            conect.insertMessage(message);
+            return null;
+        });
     }
     
     public static int getPort(){
